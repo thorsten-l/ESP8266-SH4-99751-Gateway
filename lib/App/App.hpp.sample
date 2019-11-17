@@ -10,7 +10,7 @@
 #define WIFI_PASS "<your wifi password>"
 
 #define APP_NAME "ESP8266 SH4-99751 Gateway"
-#define APP_VERSION "0.2.1"
+#define APP_VERSION "0.2.3"
 
 #define MQTT_ENABLED true
 #define MQTT_CLIENTID "sh4-99751-gateway"

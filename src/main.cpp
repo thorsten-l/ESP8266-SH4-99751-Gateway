@@ -108,7 +108,7 @@ void loop()
       }
     }
 
-    if ((currentTimestamp - sendBatteryTimestamp) >= ( 1000 * 60 ))
+    if ((currentTimestamp - sendBatteryTimestamp) >= ( 1000 * 300 ))
     {
       char buffer[16];
 
