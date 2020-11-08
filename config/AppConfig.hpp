@@ -1,5 +1,5 @@
-#ifndef __APP_HPP__
-#define __APP_HPP__
+#ifndef __APP_CONFIG_HPP__
+#define __APP_CONFIG_HPP__
 
 #define LOG0( format ) Serial.printf( "(%lu) " format, millis())
 #define LOG1( format, ... ) Serial.printf( "(%lu) " format, millis(), ##__VA_ARGS__ )
@@ -9,9 +9,6 @@
 #define WIFI_SSID "<your wifi ssid>"
 #define WIFI_PASS "<your wifi password>"
 
-#define APP_NAME "ESP8266 SH4-99751 Gateway"
-#define APP_VERSION "0.2.3"
-
 #define MQTT_ENABLED true
 #define MQTT_CLIENTID "sh4-99751-gateway"
 #define MQTT_HOST "192.168.1.1"
@@ -19,18 +16,9 @@
 #define MQTT_USEAUTH true
 #define MQTT_USER "<your mqtt user>"
 #define MQTT_PASSWORD "<your mqtt password>"
-#define MQTT_BATTERY_OUTTOPIC "/sh4-99751-gateway/01/out/battery"
+#define MQTT_BATTERY_TOPIC "/sh4-99751-gateway/state/battery"
+#define MQTT_COMMAND_TOPIC "/sh4-99751-gateway/%ld/command"
 
 #define VCC_ADJUST 1.115449915
-
-typedef struct switchconfig
-{
-  unsigned long address;
-  char outtopic[64];
-  char command_on[64];
-  char command_off[64];
-} SwitchConfig;
-
-extern SwitchConfig switchConfig[];
 
 #endif

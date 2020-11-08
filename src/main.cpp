@@ -8,6 +8,7 @@
 #include <Util.hpp>
 #include <WifiHandler.hpp>
 #include <MqttHandler.hpp>
+#include <TelnetStream.h>
 
 static time_t checkWifiTimestamp = 0;
 static time_t sendBatteryTimestamp = 0;
@@ -19,6 +20,9 @@ void showCode(unsigned int period, unsigned long address,
               unsigned long groupBit, unsigned long unit,
               unsigned long switchType)
 {
+  mqttHandler.sendCommand( address, switchType == 1 );
+  TLOG1( MQTT_COMMAND_TOPIC " ", address );
+  TelnetStream.printf( "%s\n", switchType == 1 ? "ON" : "OFF" );
 
   // Print the received code.
   Serial.print("\nCode: ");
@@ -31,22 +35,6 @@ void showCode(unsigned int period, unsigned long address,
   Serial.println(groupBit);
   Serial.print(" switchType: ");
   Serial.println(switchType);
-
-  for( int i=0; switchConfig[i].address != 0; i++ )
-  {
-    if ( address == switchConfig[i].address )
-    {
-      if ( switchType == 1 )
-      {
-        mqttHandler.sendValue( switchConfig[i].outtopic, switchConfig[i].command_on );
-      }
-      else
-      {
-        mqttHandler.sendValue( switchConfig[i].outtopic, switchConfig[i].command_off );
-      }
-    }
-  }
-
 }
 
 void setup()
@@ -84,6 +72,7 @@ void setup()
   configTime(0, 0, "pool.ntp.org");
 
   wifiHandler.wifiInitStationMode();
+  TelnetStream.begin();
   otaHandler.setup();
 
   LOG0("Receiver initialized\n");
@@ -92,6 +81,7 @@ void setup()
 void loop()
 {
   ArduinoOTA.handle();
+  TelnetStream.handle();
 
   if (otaHandler.inProgress == false)
   {
@@ -116,7 +106,7 @@ void loop()
       uint16_t vcc = (uint16_t)(((double)ESP.getVcc()) * VCC_ADJUST);
       sprintf( buffer, "%u", vcc );
 
-      mqttHandler.sendValue( MQTT_BATTERY_OUTTOPIC, buffer );
+      mqttHandler.sendValue( MQTT_BATTERY_TOPIC, buffer );
     }
 
     // handle MQTT connection

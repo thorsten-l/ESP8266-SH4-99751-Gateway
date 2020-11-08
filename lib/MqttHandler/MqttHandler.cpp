@@ -68,3 +68,24 @@ void MqttHandler::sendValue(const char *outtopic, const char *value)
     LOG1( "MQTT publish outtopic=%s value=%s\n", outtopic, value );
   }
 }
+
+static char topicBuffer[255];
+
+void MqttHandler::sendCommand( unsigned long address, const bool value)
+{
+  if (MQTT_ENABLED && client.connected())
+  {
+    sprintf( topicBuffer, MQTT_COMMAND_TOPIC, address );    
+
+    if ( value )
+    {
+      client.publish(topicBuffer, "ON" );
+      LOG1( "MQTT publish outtopic=%s value=%s\n", topicBuffer, "ON" );
+    }
+    else
+    {
+      client.publish(topicBuffer, "OFF" );
+      LOG1( "MQTT publish outtopic=%s value=%s\n", topicBuffer, "OFF" );
+    }
+  }
+}
