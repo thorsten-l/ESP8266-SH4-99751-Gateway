@@ -20,8 +20,8 @@ void showCode(unsigned int period, unsigned long address,
               unsigned long groupBit, unsigned long unit,
               unsigned long switchType)
 {
-  mqttHandler.sendCommand( address, switchType == 1 );
-  TLOG1( MQTT_COMMAND_TOPIC " ", address );
+  mqttHandler.sendCommand( address, unit, switchType == 1 );
+  TLOG1( MQTT_COMMAND_TOPIC " ", address, unit );
   TelnetStream.printf( "%s\n", switchType == 1 ? "ON" : "OFF" );
 
   // Print the received code.
@@ -69,7 +69,7 @@ void setup()
 
   showChipInfo();
 
-  configTime(0, 0, "pool.ntp.org");
+  configTime( TIMEZONE, NTP_SERVER1, NTP_SERVER2, NTP_SERVER3 );
 
   wifiHandler.wifiInitStationMode();
   TelnetStream.begin();

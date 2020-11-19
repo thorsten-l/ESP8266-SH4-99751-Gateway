@@ -7,7 +7,7 @@
 #define LOG0( format ) Serial.printf( "(%lu) " format, millis())
 #define LOG1( format, ... ) Serial.printf( "(%lu) " format, millis(), ##__VA_ARGS__ )
 #define TLOG0( format ) TelnetStream.printf( "(%ld) " format, millis())
-#define TLOG1( format, x) TelnetStream.printf( "(%ld) " format, millis(), x )
+#define TLOG1( format, ... ) TelnetStream.printf( "(%ld) " format, millis(), ##__VA_ARGS__ )
 
 #define APP_NAME "ESP8266 SH4-99751 Gateway"
 #define APP_VERSION "0.3.1"

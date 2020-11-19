@@ -71,11 +71,11 @@ void MqttHandler::sendValue(const char *outtopic, const char *value)
 
 static char topicBuffer[255];
 
-void MqttHandler::sendCommand( unsigned long address, const bool value)
+void MqttHandler::sendCommand( unsigned long address, unsigned long unit, const bool value)
 {
   if (MQTT_ENABLED && client.connected())
   {
-    sprintf( topicBuffer, MQTT_COMMAND_TOPIC, address );    
+    sprintf( topicBuffer, MQTT_COMMAND_TOPIC, address, unit );    
 
     if ( value )
     {
