@@ -6,6 +6,10 @@ docker run -it --rm \
   --name platformio platformio \
   /usr/local/bin/platformio run -e d1_mini -e d1_mini_lite
 
-mkdir -p private/firmware
-cp .pio/build/d1_mini/firmware.bin private/firmware/d1_mini.bin
-cp .pio/build/d1_mini_lite/firmware.bin private/firmware/d1_mini_lite.bin
+VERSION="`awk '/APP_VERSION/{ print $3 }' lib/App/App.hpp | sed -e 's/"//g'`"
+echo $VERSION
+
+mkdir -p firmware
+cp .pio/build/d1_mini/firmware.bin firmware/$VERSION-d1_mini.bin
+cp .pio/build/d1_mini_lite/firmware.bin firmware/$VERSION-d1_mini_lite.bin
+
