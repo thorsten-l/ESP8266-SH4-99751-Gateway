@@ -18,7 +18,8 @@ void showCode(unsigned int period, unsigned long address,
               unsigned long switchType)
 {
   mqttHandler.sendCommand( address, unit, switchType == 1 );
-  // TLOG1( appcfg.mqtt_outtopic, address, unit );
+  sprintf( buffer, appcfg.mqtt_outtopic, address, unit );
+  TelnetStream.printf( "(%s) %s ", appDateTime(), buffer );
   TelnetStream.printf( "%s\n", switchType == 1 ? "ON" : "OFF" );
 
   // Print the received code.
