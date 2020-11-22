@@ -9,6 +9,7 @@ void TelnetStreamClass::printHelp()
     "h : this help\n"
     "b : print banner\n"
     "s : status\n"
+    "j : json status\n"
     "q,e : quit / exit \n"
     ); 
 }
@@ -28,6 +29,7 @@ void TelnetStreamClass::begin() {
   isConnected = false;
   server.begin();
   client = server.available();
+  LOG0("Telnet server startet\n");
 }
 
 void TelnetStreamClass::handle() 
@@ -56,6 +58,11 @@ void TelnetStreamClass::handle()
         case 'b':
         case 'B':
           printBanner();
+          break;
+
+        case 'j':
+        case 'J':
+          TelnetStream.println(getJsonStatus(&client));
           break;
 
         case 's':

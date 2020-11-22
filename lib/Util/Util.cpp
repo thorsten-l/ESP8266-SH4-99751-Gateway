@@ -1,11 +1,17 @@
-#include <Arduino.h>
 #include "Util.hpp"
+#include <Arduino.h>
+#include <pages/Pages.h>
+
+#define BUFFER_LENGTH 3072
+char buffer[BUFFER_LENGTH];
+char buffer2[256];
 
 /*
 Find the description about the boot device code here:
 https://www.sigmdel.ca/michel/program/esp8266/arduino/watchdogs2_en.html
 */
-int getBootDevice(void) {
+int getBootDevice(void)
+{
   int bootmode = 0;
   asm("movi %0, 0x60000200\n\t"
       "l32i %0, %0, 0x118\n\t"
@@ -16,9 +22,13 @@ int getBootDevice(void) {
   return ((bootmode >> 0x10) & 0x7);
 }
 
-void alterPin(int pin) { digitalWrite(pin, 1 ^ digitalRead(pin)); }
+void alterPin(int pin)
+{
+  digitalWrite(pin, 1 ^ digitalRead(pin));
+}
 
-void showChipInfo() {
+void showChipInfo()
+{
   Serial.println("-- CHIPINFO --");
   Serial.printf("Chip Id = %08X\n", ESP.getChipId());
 
@@ -32,18 +42,18 @@ void showChipInfo() {
   Serial.printf("Flash real size: %u\n", realSize);
   Serial.printf("Flash ide  size: %u\n", ideSize);
   Serial.printf("Flash chip speed: %u\n", ESP.getFlashChipSpeed());
-  Serial.printf("Flash ide mode:  %s\n",
-                (ideMode == FM_QIO
-                     ? "QIO"
-                     : ideMode == FM_QOUT
-                           ? "QOUT"
-                           : ideMode == FM_DIO
-                                 ? "DIO"
-                                 : ideMode == FM_DOUT ? "DOUT" : "UNKNOWN"));
+  Serial.printf("Flash ide mode:  %s\n", (ideMode == FM_QIO    ? "QIO"
+                                          : ideMode == FM_QOUT ? "QOUT"
+                                          : ideMode == FM_DIO  ? "DIO"
+                                          : ideMode == FM_DOUT ? "DOUT"
+                                                               : "UNKNOWN"));
 
-  if (ideSize != realSize) {
+  if (ideSize != realSize)
+  {
     Serial.println("Flash Chip configuration wrong!\n");
-  } else {
+  }
+  else
+  {
     Serial.println("Flash Chip configuration ok.\n");
   }
 
@@ -52,4 +62,69 @@ void showChipInfo() {
   Serial.printf("Free Sketch Space : %u\n", ESP.getFreeSketchSpace());
 
   Serial.println();
+}
+
+void fillBuffer(const char *message)
+{
+  strncpy(buffer, message, BUFFER_LENGTH - 1);
+  buffer[BUFFER_LENGTH - 1] = 0;
+}
+
+void sendHtmlTemplate(const char *htmlTemplate, const char *(*setupProcessor)(const char *))
+{
+  unsigned int s = 0;
+  unsigned int d = 0;
+  char c;
+  int state = 0;
+
+  while ((c = pgm_read_byte(htmlTemplate + (s++))) > 0)
+  {
+    switch (state)
+    {
+    case 0: {
+      if (c == '%')
+      {
+        sendPrint(buffer);
+        d = 0;
+        state = 1;
+        break;
+      }
+
+      buffer[d++] = c;
+      buffer[d] = 0;
+
+      if (c == '\n')
+      {
+        sendPrint(buffer);
+        d = 0;
+      }
+      break;
+    }
+
+    case 1: {
+      if (c == '%')
+      {
+        const char *val = (*setupProcessor)(buffer);
+
+        if (val != nullptr && strlen( val ) > 0 )
+        {
+          sendPrint(val);
+        }
+
+        d = 0;
+        state = 0;
+        break;
+      }
+
+      buffer[d++] = c;
+      buffer[d] = 0;
+      break;
+    }
+    }
+  }
+
+  if (d > 0)
+  {
+    sendPrint(buffer);
+  }
 }

@@ -14,10 +14,10 @@ MqttHandler::MqttHandler() { initialized = false; }
 
 bool MqttHandler::reconnect()
 {
-  if ((MQTT_USEAUTH &&
-       client.connect(MQTT_CLIENTID, MQTT_USER,
-                      MQTT_PASSWORD)) ||
-      (!MQTT_USEAUTH && client.connect(MQTT_CLIENTID)))
+  if (( appcfg.mqtt_useauth &&
+       client.connect(appcfg.mqtt_clientid, appcfg.mqtt_user,
+                      appcfg.mqtt_password)) ||
+      (!appcfg.mqtt_useauth && client.connect(appcfg.mqtt_clientid)))
   {
     LOG0("mqtt broker connected\n");
   }
@@ -28,13 +28,13 @@ bool MqttHandler::reconnect()
 void MqttHandler::setup()
 {
   LOG0("MQTT Setup...\n");
-  client.setServer(MQTT_HOST, MQTT_PORT);
+  client.setServer(appcfg.mqtt_host, appcfg.mqtt_port);
   initialized = true;
 }
 
 void MqttHandler::handle(unsigned long now)
 {
-  if (MQTT_ENABLED)
+  if (appcfg.mqtt_enabled)
   {
     if (initialized == false)
     {
@@ -62,7 +62,7 @@ void MqttHandler::handle(unsigned long now)
 
 void MqttHandler::sendValue(const char *outtopic, const char *value)
 {
-  if (MQTT_ENABLED && client.connected())
+  if (appcfg.mqtt_enabled && client.connected())
   {
     client.publish(outtopic, value);
     LOG1( "MQTT publish outtopic=%s value=%s\n", outtopic, value );
@@ -73,9 +73,9 @@ static char topicBuffer[255];
 
 void MqttHandler::sendCommand( unsigned long address, unsigned long unit, const bool value)
 {
-  if (MQTT_ENABLED && client.connected())
+  if (appcfg.mqtt_enabled && client.connected())
   {
-    sprintf( topicBuffer, MQTT_COMMAND_TOPIC, address, unit );    
+    sprintf( topicBuffer, appcfg.mqtt_outtopic, address, unit );    
 
     if ( value )
     {
