@@ -9,8 +9,15 @@
 #include <WifiHandler.hpp>
 #include <MqttHandler.hpp>
 #include <TelnetStream.h>
+#include <LinkedList.hpp>
 
 ADC_MODE(ADC_VCC);
+
+char messageBuffer[2560];
+int messageStartIndex = 0;
+int messageEndIndex = 0;
+bool messageStartRollover = false;
+#define MAX_MESSAGE_LENGTH 200
 
 // Callback function is called only when a valid code is received.
 void showCode(unsigned int period, unsigned long address,
@@ -18,21 +25,57 @@ void showCode(unsigned int period, unsigned long address,
               unsigned long switchType)
 {
   mqttHandler.sendCommand( address, unit, switchType == 1 );
-  sprintf( buffer, appcfg.mqtt_outtopic, address, unit );
-  TelnetStream.printf( "(%s) %s ", appDateTime(), buffer );
-  TelnetStream.printf( "%s\n", switchType == 1 ? "ON" : "OFF" );
+  sprintf( buffer2, appcfg.mqtt_outtopic, address, unit );
+  sprintf( buffer, "(%s) %s %s\n", appDateTime(), buffer2, 
+           switchType == 1 ? "ON" : "OFF" );
+  TelnetStream.println();
+  TelnetStream.print( buffer );
+
+// put
+  char *mb = messageBuffer + (messageEndIndex*(MAX_MESSAGE_LENGTH+1));
+  
+  strncpy( mb, buffer, MAX_MESSAGE_LENGTH );
+  mb[MAX_MESSAGE_LENGTH] = 0;
+
+  messageEndIndex += 1;
+  messageEndIndex %= 11;
+
+  if ( messageEndIndex == 0 )
+  {
+    messageStartRollover = true;
+  }
+
+  if ( messageStartRollover )
+  {
+    messageStartIndex += 1;
+    messageStartIndex %= 11;
+  }
 
   // Print the received code.
-  Serial.print("\nCode: ");
+  Serial.print("Code: ");
   Serial.print(address);
-  Serial.print(" Period: ");
-  Serial.println(period);
   Serial.print(" unit: ");
-  Serial.println(unit);
+  Serial.print(unit);
+  Serial.print(" Period: ");
+  Serial.print(period);
   Serial.print(" groupBit: ");
-  Serial.println(groupBit);
+  Serial.print(groupBit);
   Serial.print(" switchType: ");
   Serial.println(switchType);
+  Serial.println();
+
+  // Telnet the received code.
+  TelnetStream.print("Code: ");
+  TelnetStream.print(address);
+  TelnetStream.print(" unit: ");
+  TelnetStream.print(unit);
+  TelnetStream.print(" Period: ");
+  TelnetStream.print(period);
+  TelnetStream.print(" groupBit: ");
+  TelnetStream.print(groupBit);
+  TelnetStream.print(" switchType: ");
+  TelnetStream.println(switchType);
+  TelnetStream.println();
 }
 
 void setup()
