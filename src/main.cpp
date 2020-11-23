@@ -13,17 +13,13 @@
 
 ADC_MODE(ADC_VCC);
 
-char messageBuffer[2560];
-int messageStartIndex = 0;
-int messageEndIndex = 0;
-bool messageStartRollover = false;
-#define MAX_MESSAGE_LENGTH 200
-
 // Callback function is called only when a valid code is received.
 void showCode(unsigned int period, unsigned long address,
               unsigned long groupBit, unsigned long unit,
               unsigned long switchType)
 {
+  static bool messageStartRollover = false;
+
   mqttHandler.sendCommand( address, unit, switchType == 1 );
   sprintf( buffer2, appcfg.mqtt_outtopic, address, unit );
   sprintf( buffer, "(%s) %s %s\n", appDateTime(), buffer2, 
@@ -38,7 +34,7 @@ void showCode(unsigned int period, unsigned long address,
   mb[MAX_MESSAGE_LENGTH] = 0;
 
   messageEndIndex += 1;
-  messageEndIndex %= 11;
+  messageEndIndex %= MESSAGE_BUFFER_LINES;
 
   if ( messageEndIndex == 0 )
   {
@@ -48,7 +44,7 @@ void showCode(unsigned int period, unsigned long address,
   if ( messageStartRollover )
   {
     messageStartIndex += 1;
-    messageStartIndex %= 11;
+    messageStartIndex %= MESSAGE_BUFFER_LINES;
   }
 
   // Print the received code.

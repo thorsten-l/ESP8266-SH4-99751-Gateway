@@ -1,9 +1,5 @@
 #include "Pages.h"
-
-extern char messageBuffer[];
-extern int messageStartIndex;
-extern int messageEndIndex;
-#define MAX_MESSAGE_LENGTH 200
+#include <Util.hpp>
 
 void handleRootPage()
 {

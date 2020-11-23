@@ -3,6 +3,12 @@
 
 #include <App.hpp>
 
+#define MAX_MESSAGE_LENGTH 200
+#define MESSAGE_BUFFER_LINES 11
+extern char messageBuffer[];
+extern int messageStartIndex;
+extern int messageEndIndex;
+
 extern int getBootDevice(void);
 extern void alterPin(int pin);
 extern void showChipInfo();
