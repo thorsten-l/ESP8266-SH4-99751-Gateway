@@ -1,5 +1,11 @@
 #include "App.hpp"
+#include "Util.hpp"
 #include "TelnetStream.h"
+
+void testFn()
+{
+  TelnetStream.println( "Test Function");
+}
 
 extern const char *getJsonStatus(WiFiClient *client);
 
@@ -53,6 +59,11 @@ void TelnetStreamClass::handle()
         case 'h':
         case 'H':
           printHelp();
+          break;
+
+        case 't':
+        case 'T':
+          testFn();
           break;
 
         case 'b':
