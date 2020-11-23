@@ -5,6 +5,10 @@ void handleInfoPage()
   sendHeader( APP_NAME " - Info" );
   sendPrint( "<form class='pure-form'>");
 
+  sendLegend( "Build" );
+  sendPrint("<p>Date: " __DATE__ "</p>"
+            "<p>Time: " __TIME__ "</p>");
+
   sendLegend( "RESTful API" );
 
   sendPrintf(
