@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-const char META_REFRESH[] PROGMEM =
+const char META_REFRESH30[] PROGMEM =
   "<meta http-equiv=\"refresh\" content=\"30; URL=/\">";
 
 const char header_html[] PROGMEM = {

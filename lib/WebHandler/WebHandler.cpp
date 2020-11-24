@@ -104,10 +104,10 @@ void sendHeader(const char *title, bool sendMetaRefresh, const char *style)
 
   if (sendMetaRefresh)
   {
-    server.sendContent_P(META_REFRESH);
+    server.sendContent_P(META_REFRESH30);
   }
 
-  if ( style != nullptr )
+  if (style != nullptr)
   {
     server.sendContent_P(style);
   }
@@ -121,7 +121,7 @@ void sendHeader(const char *title, bool sendMetaRefresh, const char *style)
 
 void sendHeader(const char *title, bool sendMetaRefresh)
 {
-  sendHeader( title, sendMetaRefresh, nullptr );
+  sendHeader(title, sendMetaRefresh, nullptr);
 }
 
 void sendHeader(const char *title)
@@ -204,8 +204,41 @@ void WebHandler::setup()
 
   server.on("/info", []() {
     server.sendHeader("Access-Control-Allow-Origin", "*");
+    sendHeaderNoCache();
     String message(getJsonStatus(NULL));
     server.send(200, "application/json", message);
+  });
+
+  server.on("/last10", []() {
+    server.sendHeader("Access-Control-Allow-Origin", "*");
+    sendHeaderNoCache();
+    server.chunkedResponseModeStart(200, "application/json");
+    sendPrint("{ \"last10\" : [ ");
+
+    int msi = messageStartIndex;
+    bool firstMessage = true;
+
+    while (msi != messageEndIndex)
+    {
+      char *mb = messageBuffer + (msi * (MAX_MESSAGE_LENGTH + 1));
+      if ( firstMessage == false )
+      {
+        sendPrint(",");
+      }
+      else 
+      {
+        firstMessage = false;
+      }
+      sendPrint("\"");
+      sendPrint(mb);
+      sendPrint("\"");
+      msi += 1;
+      msi %= MESSAGE_BUFFER_LINES;
+    }
+
+    sendPrint("] }");
+    server.chunkedResponseFinalize();
+    server.client().stop();
   });
 
   if (appcfg.ota_enabled == false)
