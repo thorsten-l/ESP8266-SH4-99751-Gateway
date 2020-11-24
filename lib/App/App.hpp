@@ -9,7 +9,7 @@
 #define TLOG1( format, ... ) TelnetStream.printf( "(%ld) " format, millis(), ##__VA_ARGS__ )
 
 #define APP_NAME "Smartwares Gateway"
-#define APP_VERSION "0.5.1"
+#define APP_VERSION "0.5.2"
 #define APP_AUTHOR "Dr. Thorsten Ludewig <t.ludewig@gmail.com>"
 #define APP_CONFIG_FILE_JSON "/config.json"
 
