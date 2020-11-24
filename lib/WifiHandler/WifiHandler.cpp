@@ -138,6 +138,7 @@ const bool WifiHandler::handle()
       {
         if (status == WL_CONNECTED)
         {
+          app.wifiLedOn();
           Serial.println("\n");
           Serial.printf("WiFi connected to %s\n", appcfg.wifi_ssid);
 
