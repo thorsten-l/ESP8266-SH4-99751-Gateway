@@ -77,19 +77,6 @@ void showCode(unsigned int period, unsigned long address,
 void setup()
 {
   NewRemoteReceiver::init(4, 2, showCode);
-
-  showCode( 200, 1, 0, 1, 0 );
-  showCode( 200, 2, 0, 1, 1 );
-  showCode( 200, 3, 0, 1, 2 );
-  showCode( 200, 4, 0, 1, 0 );
-  showCode( 200, 5, 0, 1, 1 );
-  showCode( 200, 6, 0, 1, 2 );
-  showCode( 200, 7, 0, 1, 0 );
-  showCode( 200, 8, 0, 1, 1 );
-  showCode( 200, 9, 0, 1, 2 );
-  showCode( 200, 10, 0, 1, 0 );
-  showCode( 200, 11, 0, 1, 1 );
-
   app.setup();
   LOG0("Receiver initialized\n");
 }
